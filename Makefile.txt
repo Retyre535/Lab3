@@ -1,42 +1,26 @@
-# Компилятор и флаги компиляции
-CC = gcc
-CFLAGS = -Wall -Wextra -g
+CC:=gcc
 
-# Директории
-SRC_DIR = src
-INC_DIR = include
-OBJ_DIR = obj
-BIN_DIR = bin
+app: main.o io.o deque.o sorting.o timer.o
+	$(CC) main.o io.o deck.o -o app
 
-# Имя исполняемого файла
-TARGET = main
+main.o: main.c main.h
+	$(CC) -c main.c
 
-# Исходные и объектные файлы
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+io.o: io.c io.h
+	$(CC) -c io.c
 
-# Правило для сборки исполняемого файла
-$(BIN_DIR)/$(TARGET): $(OBJS)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@
+deck.o: deque.c deque.h
+	$(CC) -c deque.c
 
-# Правило для компиляции исходных файлов в объектные файлы
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
-# Основная цель
-all: $(BIN_DIR)/$(TARGET)
+sorting.o: sorting.c sorting.h
+	$(CC) -c sorting.c
 
-# Очистка сгенерированных файловclean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+timer.o: timer.c timer.h
+	$(CC) -c timer.c
 
-# Запуск программыrun: all
-	./$(BIN_DIR)/$(TARGET)
-# Тестирование программы с различными наборами данных
-test: all
-	@echo "Testing bubble sort with small data"
-	@./$(BIN_DIR)/$(TARGET) --file test/test_data_small.txt
-	@echo "Testing bubble sort with medium data"
-	@./$(BIN_DIR)/$(TARGET) --file test/test_data_medium.txt
-	@echo "Testing bubble sort with large data"
-	@./$(BIN_DIR)/$(TARGET) --file test/test_data_large.txt
+.PHONY: clear
+
+clear:
+	rm app
+	rm *.o
+	rm *.out
