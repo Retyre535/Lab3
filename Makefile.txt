@@ -1,0 +1,42 @@
+# Компилятор и флаги компиляции
+CC = gcc
+CFLAGS = -Wall -Wextra -g
+
+# Директории
+SRC_DIR = src
+INC_DIR = include
+OBJ_DIR = obj
+BIN_DIR = bin
+
+# Имя исполняемого файла
+TARGET = main
+
+# Исходные и объектные файлы
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+
+# Правило для сборки исполняемого файла
+$(BIN_DIR)/$(TARGET): $(OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Правило для компиляции исходных файлов в объектные файлы
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+# Основная цель
+all: $(BIN_DIR)/$(TARGET)
+
+# Очистка сгенерированных файловclean:
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+# Запуск программыrun: all
+	./$(BIN_DIR)/$(TARGET)
+# Тестирование программы с различными наборами данных
+test: all
+	@echo "Testing bubble sort with small data"
+	@./$(BIN_DIR)/$(TARGET) --file test/test_data_small.txt
+	@echo "Testing bubble sort with medium data"
+	@./$(BIN_DIR)/$(TARGET) --file test/test_data_medium.txt
+	@echo "Testing bubble sort with large data"
+	@./$(BIN_DIR)/$(TARGET) --file test/test_data_large.txt
